@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StemdjaGPT - Generator Teks Bahasa Indonesia</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="text-center mb-4">
+            <h1 class="fw-bold">StemdjaGPT</h1>
+            <p class="text-muted">Generator teks Bahasa Indonesia berbasis GPT</p>
+        </div>
+
+        <div class="card shadow-sm p-4">
+            <form id="generateForm">
+                <div class="mb-3">
+                    <label for="prompt" class="form-label">Masukkan Teks Awal</label>
+                    <textarea class="form-control" id="prompt" rows="4" placeholder="Contoh: Pemerintah hari ini mengumumkan..."></textarea>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="max_length" class="form-label">Panjang Teks (max_length)</label>
+                        <input type="number" id="max_length" class="form-control" value="100">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="temperature" class="form-label">Kreativitas (temperature)</label>
+                        <input type="number" step="0.1" id="temperature" class="form-control" value="0.8" min="0.1" max="2.0">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100"> Hasilkan Teks</button>
+            </form>
+
+            <div class="mt-4">
+                <h5 class="fw-bold">Hasil:</h5>
+                <div id="output" class="border rounded p-3 bg-white" style="min-height:100px;"></div>
+            </div>
+        </div>
+
+        <footer class="text-center mt-5 text-muted">
+            <small>© 2025 StemdjaGPT — Dibuat dengan FastAPI & Hugging Face</small>
+        </footer>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $("#generateForm").submit(function(e) {
+                e.preventDefault();
+
+                const prompt = $("#prompt").val().trim();
+                const max_length = parseInt($("#max_length").val());
+                const temperature = parseFloat($("#temperature").val());
+
+                if (!prompt) {
+                    alert("Masukkan teks terlebih dahulu!");
+                    return;
+                }
+
+                $("#output").html("<em>Sedang memproses...</em>");
+
+                $.ajax({
+                    url: "https://fikrialfanf-api-gpt.hf.space/generate",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        prompt: prompt,
+                        max_length: max_length,
+                        temperature: temperature
+                    }),
+                    success: function(response) {
+                        $("#output").html("<strong> " + response.output + "</strong>");
+                    },
+                    error: function(xhr) {
+                        $("#output").html("<span class='text-danger'>Terjadi kesalahan saat menghubungi API.</span>");
+                        console.error(xhr);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
